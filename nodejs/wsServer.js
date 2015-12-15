@@ -44,8 +44,8 @@ http.listen(9090, function(){
 console.log('listening on *:9090');
 });
 
-io.on('connection', function(socket){
-  socket.on('message', function(msg){
-    io.emit('message', msg);
-  });
-});
+// io.on('connection', function(socket){
+//   socket.on('message', function(msg){
+//     io.emit('message', msg);
+//   });
+// });
