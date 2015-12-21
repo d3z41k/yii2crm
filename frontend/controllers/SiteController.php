@@ -57,7 +57,7 @@ class SiteController extends Controller
                     'logout' => ['post'],
                 ],
             ],
-        ]; 
+        ];
     }
 
     /**
@@ -77,23 +77,34 @@ class SiteController extends Controller
     }
 
     public function actionIndex()
-    { 
+    {
         return $this->render('index');
     }
 
     public function actionGuarr()
     {
-        //Yii::$app->user->identity->isGuest;
-        $user = Yii::$app->user->identity;
-        if(!$user)
-            throw new HTTP_Exception_404('File not found!');
-        $user = [
-            'id' => $user->id,
-            'username' => $user->username,
-            'email' => $user->email,
-            'dept' => $user->dept,
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $auth = \Yii::$app->user->isGuest;
+        //$dept = \Yii::$app->user->identity->dept;
+        //$cookies = Yii::$app->request->cookies;
+        return [
+                'auth' => $auth,
+                //'dept' => $dept,
         ];
-        return json_encode($user);
+           
+//        \Yii::$app->getResponse()
+//            ->getHeaders()
+//            ->set('X-Requested-With', 'XMLHttpRequest');
+
+//        $user = Yii::$app->user->identity;
+//        $user2 = [
+//            'id' => $user->id,
+//            'username' => $user->username,
+//            'email' => $user->email,
+//            'dept' => $user->dept,
+//        ];
+//          return ['status' => 'user'];
+// }
     }
 
     public function actionContact()
@@ -151,21 +162,6 @@ class SiteController extends Controller
         return $this->render('signup', [
             'model' => $model,
         ]);
-    }
-
-    public function actionChat()
-    {
-        if (Yii::$app->request->post()) {
-
-        $name = Yii::$app->request->post('name');
-        $message = Yii::$app->request->post('message');
-
-        return Yii::$app->redis->executeCommand('PUBLISH', [
-            'channel' => 'notification',
-            'message' => Json::encode(['name' => $name, 'message' => $message])
-        ]);
-        }
-        return $this->render('chat');
     }
 
     public function actionRequestPasswordReset()
