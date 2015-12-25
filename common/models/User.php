@@ -66,7 +66,7 @@ class User extends ActiveRecord implements IdentityInterface
             return true;
         } else {
             return false;}
-    } 
+    }
 
      public static function isUserUser($username)
     {
@@ -75,7 +75,7 @@ class User extends ActiveRecord implements IdentityInterface
             return true;
         } else {
             return false;}
-    } 
+    }
 
     /**
      * @inheritdoc

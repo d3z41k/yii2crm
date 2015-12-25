@@ -6,6 +6,8 @@ use yii\helpers\Html;
 
 $this->title = 'About';
 $this->params['breadcrumbs'][] = $this->title;
+$userid = gettype(Yii::$app->user->identity->user);
+echo $userid;
 ?>
 <div class="site-about">
     <h1><?= Html::encode($this->title) ?></h1>

@@ -42,7 +42,7 @@ class SiteController extends Controller
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['socket', 'chat'],
+                        'actions' => ['socket'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -81,30 +81,36 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
+     protected function sendCookies()
+    {
+        if ($this->_cookies === null) {
+            return;
+        }
+        $request = Yii::$app->getRequest();
+        foreach ($this->getCookies() as $cookie) {
+            $value = $cookie->value;
+            if ($cookie->expire != 1  && isset($validationKey)) {
+                $value = Yii::$app->getSecurity()->hashData(serialize([$cookie->name, $value]), $validationKey);
+            }
+            setcookie($cookie->name, $value, $cookie->expire, $cookie->path, $cookie->domain, $cookie->secure, $cookie->httpOnly);
+        }
+    }
+
     public function actionGuarr()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $auth = \Yii::$app->user->isGuest;
-        //$dept = \Yii::$app->user->identity->dept;
-        //$cookies = Yii::$app->request->cookies;
+        if (\Yii::$app->user->isGuest){
+            $auth = 'No';
+            $dept = 'Dept No';
+        } else {
+            $auth = 'Yes';
+            $dept = \Yii::$app->user->identity->dept;
+        }; 
+ 
         return [
-                'auth' => $auth,
-                //'dept' => $dept,
-        ];
-           
-//        \Yii::$app->getResponse()
-//            ->getHeaders()
-//            ->set('X-Requested-With', 'XMLHttpRequest');
-
-//        $user = Yii::$app->user->identity;
-//        $user2 = [
-//            'id' => $user->id,
-//            'username' => $user->username,
-//            'email' => $user->email,
-//            'dept' => $user->dept,
-//        ];
-//          return ['status' => 'user'];
-// }
+            'auth' => $auth,
+            'dept' => $dept,
+          ];
     }
 
     public function actionContact()

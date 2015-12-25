@@ -21,11 +21,19 @@ class SocketIO
         if (!$fd) {
             return false;
         } //Can't connect tot server
+
+        $validationKey = Yii::$app->request->cookieValidationKey;
+        $cookie = Yii::$app->request->cookies->getValue('_identity');
+        $cookie = Yii::$app->getSecurity()->hashData(serialize(['_identity', $cookie]), $validationKey);
+        $cookie = '_identity='.urlencode($cookie);
+
         $key = $this->generateKey();
         $out = "GET $address&transport=$transport HTTP/1.1\r\n";
         $out.= "Host: http://$host:$port\r\n";
         $out.= "Upgrade: WebSocket\r\n";
         $out.= "Connection: Upgrade\r\n";
+        $out.= "Cookie: $cookie\r\n";
+        $out.= "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36\r\n";
         $out.= "Sec-WebSocket-Key: $key\r\n";
         $out.= "Sec-WebSocket-Version: 13\r\n";
         $out.= "Origin: *\r\n\r\n";

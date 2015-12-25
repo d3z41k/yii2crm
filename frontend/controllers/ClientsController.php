@@ -23,7 +23,7 @@ class ClientsController extends Controller
 
         'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index'],
+                'only' => ['index', 'clients'],
                 'rules' => [
                     [
                    'actions' => ['index'],
@@ -63,7 +63,15 @@ class ClientsController extends Controller
     {	
         $socketio = new SocketIO();
         $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ view | id = '. $id);
-       
+//        if (Yii::$app->request->cookies['test']) {
+//            Yii::$app->response->cookies->add(new \yii\web\Cookie([
+//                'name' => 'test',
+//                'value' => Yii::$app->user->identity->id,
+//            ]));
+//        }
+//        $sign = Yii::$app->request->cookies['test'];
+//        $socketio->send('localhost', 9090, 'message', $sign);
+
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
