@@ -1,8 +1,15 @@
 <?php
 /* @var $this yii\web\View */
 use yii\bootstrap\Modal;
+use yii\bootstrap\Alert;
 
 $this->title = 'yii2crm';
+    // echo Alert::widget([
+    //     'options' => [
+    //         'class' => 'alert-info'
+    //     ],
+    //     'body' => '<b>User 1</b>, Make some actions.'
+    // ]);
 ?>
 <div class="site-index">
 
@@ -11,6 +18,7 @@ $this->title = 'yii2crm';
 
         <p class="lead">This is our test CRM.</p>
         <?php
+
         Modal::begin([
             'header' => '<h2>This is the test CRM system.</h2>',
             'toggleButton' => [
@@ -22,7 +30,18 @@ $this->title = 'yii2crm';
 
         echo 'It was developed for learning to the yii2 framework.';
         Modal::end();
-        ?>
+
+        $var = 123;
+        //начало многосточной строки, можно использовать любые кавычки
+$script = <<< JS
+    function foo() {
+        return $var; //можно использовать переменные
+    }
+JS;
+//маркер конца строки, обязательно сразу, без пробелов и табуляции
+$this->registerJs($script, yii\web\View::POS_READY);
+
+?>
         <!-- <p><a class="btn btn-lg btn-success" href="/frontend/web/site/login">Get started with yii2crm</a></p> -->
     </div>
 

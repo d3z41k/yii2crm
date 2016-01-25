@@ -2,6 +2,7 @@
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
+//use yii\bootstrap\Alert;
 use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use frontend\widgets\Alert;
@@ -24,6 +25,7 @@ AppAsset::register($this);
 </head>
 <body>
     <?php $this->beginBody() ?>
+
     <div class="wrap">
         <?php
             NavBar::begin([
@@ -37,7 +39,7 @@ AppAsset::register($this);
                 ['label' => 'Home', 'url' => ['/site/index']],
                 ['label' => 'Clients', 'url' => ['/clients/index']],
                 ['label' => 'Contact', 'url' => ['/site/contact']],
-                //['label' => 'Socket', 'url' => ['/site/socket']],
+                ['label' => 'Socket', 'url' => ['/site/socket']],
 				//['label' => 'About', 'url' => ['/site/about']],
                 //['label' => 'Chat', 'url' => ['/site/chat']],					
             ];
@@ -56,6 +58,7 @@ AppAsset::register($this);
                 'items' => $menuItems,
             ]);
             NavBar::end();
+            $info = '1121312';
         ?>
 
         <div class="container">
@@ -63,6 +66,7 @@ AppAsset::register($this);
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= Alert::widget() ?>
+
         <?= $content ?>
         </div>
     </div>
@@ -75,6 +79,14 @@ AppAsset::register($this);
     </footer>
 
     <?php $this->endBody() ?>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+    var socket = io.connect('http://vm12721.hv8.ru:9090');
+    socket.on('message', function(msg){
+      alert(msg);  
+    });
+</script>
 </body>
 </html>
 <?php $this->endPage() ?>

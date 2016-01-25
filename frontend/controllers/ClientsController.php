@@ -29,9 +29,9 @@ class ClientsController extends Controller
                    'actions' => ['index'],
                    'allow' => true,
                    'roles' => ['@'],
-                   'matchCallback' => function ($rule, $action) {
-                       return User::isUserUser(Yii::$app->user->identity->username);
-                   }
+                   // 'matchCallback' => function ($rule, $action) {
+                   //     return User::isUserUser(Yii::$app->user->identity->username);
+                   //}
                     ],
                 ],
             ],
@@ -53,24 +53,21 @@ class ClientsController extends Controller
     {
         $searchModel = new ClientsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        //"костыль"
+        $socketio = new SocketIO();
+        $socketio->send('localhost', 9090, 'message', '');
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-        ]);
+        ]);   
     }
 
     public function actionView($id)
     {	
         $socketio = new SocketIO();
         $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ view | id = '. $id);
-//        if (Yii::$app->request->cookies['test']) {
-//            Yii::$app->response->cookies->add(new \yii\web\Cookie([
-//                'name' => 'test',
-//                'value' => Yii::$app->user->identity->id,
-//            ]));
-//        }
-//        $sign = Yii::$app->request->cookies['test'];
-//        $socketio->send('localhost', 9090, 'message', $sign);
+        unset($socketio);
 
         return $this->render('view', [
             'model' => $this->findModel($id),
@@ -84,7 +81,8 @@ class ClientsController extends Controller
             
         $socketio = new SocketIO();
         $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ create | id = '. $model->id);
-			
+		unset($socketio);
+
             return $this->redirect(['index']);
         } else {
             return $this->render('create', [
@@ -118,7 +116,8 @@ class ClientsController extends Controller
 
         $socketio = new SocketIO();
         $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ update | id = '. $model->id.' '.$message);
-			        
+		unset($socketio);
+
             return $this->redirect(['index']);
         } else {
             return $this->render('update', [
@@ -133,6 +132,7 @@ class ClientsController extends Controller
 
         $socketio = new SocketIO();
         $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ delete | id = '. $id);
+        unset($socketio);
 
         return $this->redirect(['index']);
     }

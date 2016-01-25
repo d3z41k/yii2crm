@@ -2,6 +2,7 @@
 namespace backend\controllers;
 
 use Yii;
+use frontend\controllers\SocketIO;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use common\models\LoginForm;
@@ -95,6 +96,11 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->loginAdmin()) {
+
+            // $socketio = new SocketIO();
+            // $socketio->send('localhost', 9090, 'connectUser', Yii::$app->user->identity->id);
+            // unset($socketio);
+
             return $this->goBack();
         } else {
             return $this->render('login', [
@@ -105,6 +111,10 @@ class SiteController extends Controller
 
     public function actionLogout()
     {
+        // $socketio = new SocketIO();
+        // $socketio->send('localhost', 9090, 'disconnectUser', Yii::$app->user->identity->id);
+        // unset($socketio);
+
         Yii::$app->user->logout();
 
         return $this->goHome();

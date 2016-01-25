@@ -2,6 +2,7 @@
 namespace frontend\controllers;
 
 use Yii;
+use frontend\controllers\SocketIO;
 use common\models\LoginForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
@@ -81,33 +82,45 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
-     protected function sendCookies()
+     public function actionSocket()
     {
-        if ($this->_cookies === null) {
-            return;
-        }
-        $request = Yii::$app->getRequest();
-        foreach ($this->getCookies() as $cookie) {
-            $value = $cookie->value;
-            if ($cookie->expire != 1  && isset($validationKey)) {
-                $value = Yii::$app->getSecurity()->hashData(serialize([$cookie->name, $value]), $validationKey);
-            }
-            setcookie($cookie->name, $value, $cookie->expire, $cookie->path, $cookie->domain, $cookie->secure, $cookie->httpOnly);
-        }
+        return $this->render('socket');
     }
+
+    //  protected function sendCookies()
+    // {
+    //     if ($this->_cookies === null) {
+    //         return;
+    //     }
+    //     $request = Yii::$app->getRequest();
+    //     foreach ($this->getCookies() as $cookie) {
+    //         $value = $cookie->value;
+    //         if ($cookie->expire != 1  && isset($validationKey)) {
+    //             $value = Yii::$app->getSecurity()->hashData(serialize([$cookie->name, $value]), $validationKey);
+    //         }
+    //         setcookie($cookie->name, $value, $cookie->expire, $cookie->path, $cookie->domain, $cookie->secure, $cookie->httpOnly);
+    //     }
+    // }
 
     public function actionGuarr()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         if (\Yii::$app->user->isGuest){
+            $id = 'No';
+            $username = 'No';
             $auth = 'No';
             $dept = 'Dept No';
         } else {
+            $id = \Yii::$app->user->identity->id;
+            $username = \Yii::$app->user->identity->username;
             $auth = 'Yes';
             $dept = \Yii::$app->user->identity->dept;
+
         }; 
  
         return [
+            'id' => $id,
+            'username' => $username,
             'auth' => $auth,
             'dept' => $dept,
           ];
@@ -139,6 +152,10 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            
+            $socketio = new SocketIO();
+            $socketio->send('localhost', 9090, 'connectUser', Yii::$app->user->identity->id);
+
             return $this->goBack();
         } else {
             return $this->render('login', [
@@ -149,8 +166,11 @@ class SiteController extends Controller
 
     public function actionLogout()
     {
-        Yii::$app->user->logout();
+        $socketio = new SocketIO();
+        $socketio->send('localhost', 9090, 'disconnectUser', Yii::$app->user->identity->id);
+        unset($socketio);
 
+        Yii::$app->user->logout();
         return $this->goHome();
     }
 
@@ -160,7 +180,7 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $model->signup()) {
                 if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
+                   return $this->goHome();
                 }
             }
         }
