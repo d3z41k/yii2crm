@@ -87,21 +87,6 @@ class SiteController extends Controller
         return $this->render('socket');
     }
 
-    //  protected function sendCookies()
-    // {
-    //     if ($this->_cookies === null) {
-    //         return;
-    //     }
-    //     $request = Yii::$app->getRequest();
-    //     foreach ($this->getCookies() as $cookie) {
-    //         $value = $cookie->value;
-    //         if ($cookie->expire != 1  && isset($validationKey)) {
-    //             $value = Yii::$app->getSecurity()->hashData(serialize([$cookie->name, $value]), $validationKey);
-    //         }
-    //         setcookie($cookie->name, $value, $cookie->expire, $cookie->path, $cookie->domain, $cookie->secure, $cookie->httpOnly);
-    //     }
-    // }
-
     public function actionGuarr()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -153,8 +138,9 @@ class SiteController extends Controller
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             
-            $socketio = new SocketIO();
-            $socketio->send('localhost', 9090, 'connectUser', Yii::$app->user->identity->id);
+        //Убрал отправу id текущего пользователя при авторизации
+        //$socketio = new SocketIO();
+        //$socketio->send('localhost', 9090, 'connectUser', Yii::$app->user->identity->id);
 
             return $this->goBack();
         } else {
@@ -168,7 +154,6 @@ class SiteController extends Controller
     {
         $socketio = new SocketIO();
         $socketio->send('localhost', 9090, 'disconnectUser', Yii::$app->user->identity->id);
-        unset($socketio);
 
         Yii::$app->user->logout();
         return $this->goHome();

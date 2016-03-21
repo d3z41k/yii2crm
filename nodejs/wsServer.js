@@ -7,6 +7,8 @@ var userInfo = {};
 
 io.use(function(socket, next){ //произвольная функция, которая запускается когда создаётся сокет
     var handshakeData = socket.request; //получаем иформация о запросе
+    // console.log(handshakeData.headers["cookie"]);
+    // console.log('===============================================');
     requestify.get('http://vm12721.hv8.ru/frontend/web/site/guarr', {
             dataType: 'json',
                 headers: {
@@ -18,6 +20,10 @@ io.use(function(socket, next){ //произвольная функция, кот
     ).then(function(response){
         var jsonObj = response.getBody(); //получили нужную информацию из Yii2 
         userInfo[jsonObj.username] = jsonObj;
+
+        // console.log(userIdList);
+        // console.log(userInfo);
+
         //на основе полученной информации, группируем пользователей по комнатам
         if(jsonObj.dept == 'Dept 1'){
             socket.join('room1');
@@ -37,19 +43,21 @@ io.use(function(socket, next){ //произвольная функция, кот
 io.on('connection', function(socket){
 
     socket.on('connectUser', function(data){
-        //при авторизации добавляем пользователя
-        socket.userId = data; // в user_id передаём идентификатор пользователя
-        console.log(userIdList);            
-        if(socket.userId in userIdList){
-            console.log('user alredy created');
+        //при авторизации добавляем id пользователя и соответственный этому id массив socket.id  
+        console.log(userInfo);          
+        if(data in userIdList){
+            userIdList[data].push(socket.id);
+            console.log('user alredy created, add socket id');
+            console.log(userIdList); 
         } else {
-            userIdList[socket.userId] = data;
-            console.log('add user');
+            userIdList[data] = [socket.id]; 
+            console.log('add new user and add first socket id');
+            console.log(userIdList);          
         } 
     });
 
     socket.on('disconnectUser', function(data) {
-        //при выходе пользоватея удаляем его id 
+        //при выходе пользоватея удаляем его id и соответственный массив socket.id
         delete userIdList[data];
         console.log('disconnect user: ' + data);
         });
@@ -58,13 +66,13 @@ io.on('connection', function(socket){
         //получение комнаты отправителя и отправка оповещения пользоватемя комнаты отправителя и администраторам
         //"костыль" - скорее всего надо определить отправителя через socket...
         if(msg != ''){
+            console.log('msg socket '+socket.id);
             var currUser = ((msg.split('@')[0]).trim());    
-            //io.in(userInfo[currUser].room).in('roomA').emit('message', msg);
-            //почему-то broadcast не работает в Chrome, то есть отправитель получает своё сообщение тоже, в Firefox данной проблемы не наблюдается 
-            socket.to(userInfo[currUser].room).broadcast.emit('message', msg , socket.id);        
+            socket.to(userInfo[currUser].room).broadcast.emit('message', msg);
             socket.to('roomA').emit('message', msg); 
         } 
     });
+
 });
  
 

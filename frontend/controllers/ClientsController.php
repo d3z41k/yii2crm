@@ -67,8 +67,6 @@ class ClientsController extends Controller
     {	
         $socketio = new SocketIO();
         $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ view | id = '. $id);
-        unset($socketio);
-
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -81,7 +79,6 @@ class ClientsController extends Controller
             
         $socketio = new SocketIO();
         $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ create | id = '. $model->id);
-		unset($socketio);
 
             return $this->redirect(['index']);
         } else {
@@ -116,7 +113,6 @@ class ClientsController extends Controller
 
         $socketio = new SocketIO();
         $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ update | id = '. $model->id.' '.$message);
-		unset($socketio);
 
             return $this->redirect(['index']);
         } else {
@@ -132,7 +128,6 @@ class ClientsController extends Controller
 
         $socketio = new SocketIO();
         $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ delete | id = '. $id);
-        unset($socketio);
 
         return $this->redirect(['index']);
     }

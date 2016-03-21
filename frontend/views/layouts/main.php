@@ -79,13 +79,30 @@ AppAsset::register($this);
     </footer>
 
     <?php $this->endBody() ?>
+    <?php
+    //Получение информации о текущем пользователе для использования в Сокете
+        if(Yii::$app->user->isGuest){
+            $userId ='Guest';
+            $currUser = ''; 
+        }else{
+            $userId = Yii::$app->user->identity->id;
+            $currUser = Yii::$app->user->identity->username; 
+        };
+
+                       
+    ?>
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
     var socket = io.connect('http://vm12721.hv8.ru:9090');
+    //Заглушка для того, чтобы отправитель не получал уведомления в свои же открытые вкладки
+    //Не уверен на сколько это правильно, но другого решения пока не нашёл
     socket.on('message', function(msg){
-      alert(msg);  
+        if((msg.split('@')[0]).trim() != '<?= $currUser ?>')
+            alert(msg);
     });
+    //Эмитируем сообщение с указанием id текущего пользователя с каждой страницы 
+    socket.emit('connectUser', '<?= $userId ?>');
 </script>
 </body>
 </html>
