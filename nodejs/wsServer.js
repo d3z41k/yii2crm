@@ -66,10 +66,12 @@ io.on('connection', function(socket){
         //получение комнаты отправителя и отправка оповещения пользоватемя комнаты отправителя и администраторам
         //"костыль" - скорее всего надо определить отправителя через socket...
         if(msg != ''){
-            console.log('msg socket '+socket.id);
-            var currUser = ((msg.split('@')[0]).trim());    
-            socket.to(userInfo[currUser].room).broadcast.emit('message', msg);
-            socket.to('roomA').emit('message', msg); 
+            // var currUser = ((msg.split('@')[0]).trim());    
+            // socket.to(userInfo[currUser].room).broadcast.emit('message', msg.tmsg);
+            // socket.to('roomA').emit('message', msg);
+            var msg = JSON.parse(msg);
+            socket.to(userInfo[msg.uname].room).broadcast.emit('message', msg.tmsg);
+            socket.to('roomA').emit('message', msg.tmsg);            
         } 
     });
 

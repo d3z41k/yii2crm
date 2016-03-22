@@ -66,7 +66,13 @@ class ClientsController extends Controller
     public function actionView($id)
     {	
         $socketio = new SocketIO();
-        $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ view | id = '. $id);
+        //$socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ view | id = '. $id);
+        $msg = array(
+            'uname' => Yii::$app->user->identity->username,
+            'tmsg' => Yii::$app->user->identity->username .' @ view | id = '. $id
+        );
+        $socketio->send('localhost', 9090, 'message', json_encode($msg));
+    
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -78,7 +84,12 @@ class ClientsController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             
         $socketio = new SocketIO();
-        $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ create | id = '. $model->id);
+        //$socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ create | id = '. $model->id);
+        $msg = array(
+            'uname' => Yii::$app->user->identity->username,
+            'tmsg' => Yii::$app->user->identity->username .' @ create | id = '. $model->id
+        );
+        $socketio->send('localhost', 9090, 'message', json_encode($msg));
 
             return $this->redirect(['index']);
         } else {
@@ -112,7 +123,13 @@ class ClientsController extends Controller
 			$message .='[born]';	
 
         $socketio = new SocketIO();
-        $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ update | id = '. $model->id.' '.$message);
+        //$socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ update | id = '. $model->id.' '.$message);
+
+        $msg = array(
+            'uname' => Yii::$app->user->identity->username,
+            'tmsg' => Yii::$app->user->identity->username .' @ update | id = '. $model->id.' '.$message
+        );
+        $socketio->send('localhost', 9090, 'message', json_encode($msg));
 
             return $this->redirect(['index']);
         } else {
@@ -127,7 +144,13 @@ class ClientsController extends Controller
         $this->findModel($id)->delete();
 
         $socketio = new SocketIO();
-        $socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ delete | id = '. $id);
+        //$socketio->send('localhost', 9090, 'message', Yii::$app->user->identity->username .' @ delete | id = '. $id);
+
+        $msg = array(
+            'uname' => Yii::$app->user->identity->username,
+            'tmsg' => Yii::$app->user->identity->username .' @ delete | id = '. $id
+        );
+        $socketio->send('localhost', 9090, 'message', json_encode($msg));
 
         return $this->redirect(['index']);
     }
